@@ -1,0 +1,120 @@
+<div id="dp-wrapper" class="dp-wrapper dp-basic-bar variation-2" style="background-color: #22272e; color: #ffffff; padding: 20px; border-radius: 8px; max-width: 900px; margin: 0 auto; font-family: system-ui, sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+    <header class="dp-header" style="background-color: #1c8a24; padding: 20px; border-radius: 6px; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-size: 26px; color: #000000; font-weight: 800;">🎮 Genre Pillar Sorter</h2>
+        <p style="margin: 6px 0 0 0; color: #111111; font-weight: 600; font-size: 14px;">Match each cinematic pillar card to its proper category definition!</p>
+    </header>
+
+    <div style="display: flex; justify-content: space-between; background-color: #2d333b; padding: 12px 20px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; border-left: 5px solid #1c8a24;">
+        <div>Score: <span id="sorter-score">0</span> / 3</div>
+        <div>Streak: 🔥 <span id="sorter-streak">0</span></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 20px;">
+        <div class="sort-drop-zone" data-category="plot" style="background-color: #2d333b; border: 2px dashed #444c56; border-radius: 6px; padding: 16px; min-height: 160px;">
+            <h3 style="margin-top: 0; color: #1c8a24; font-size: 18px; border-bottom: 1px solid #444c56; padding-bottom: 6px;">Plot &amp; Structure</h3>
+            <div class="zone-items" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;"></div>
+        </div>
+        <div class="sort-drop-zone" data-category="aesthetics" style="background-color: #2d333b; border: 2px dashed #444c56; border-radius: 6px; padding: 16px; min-height: 160px;">
+            <h3 style="margin-top: 0; color: #1c8a24; font-size: 18px; border-bottom: 1px solid #444c56; padding-bottom: 6px;">Aesthetics &amp; Style</h3>
+            <div class="zone-items" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;"></div>
+        </div>
+        <div class="sort-drop-zone" data-category="emotion" style="background-color: #2d333b; border: 2px dashed #444c56; border-radius: 6px; padding: 16px; min-height: 160px;">
+            <h3 style="margin-top: 0; color: #1c8a24; font-size: 18px; border-bottom: 1px solid #444c56; padding-bottom: 6px;">Emotional Response</h3>
+            <div class="zone-items" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;"></div>
+        </div>
+    </div>
+
+    <div style="background-color: #2d333b; padding: 16px; border-radius: 6px; border-top: 3px solid #1c8a24;">
+        <h3 style="margin-top: 0; color: #1c8a24; font-size: 16px; margin-bottom: 12px;">Pillar Card Bank</h3>
+        <div id="sorter-bank" style="display: flex; flex-wrap: wrap; gap: 12px; min-height: 80px;">
+            <div class="sort-card" draggable="true" id="scard-1" data-category="plot" style="background-color: #373e47; border: 1px solid #444c56; border-radius: 6px; padding: 10px; cursor: grab; display: flex; align-items: center; gap: 10px; width: calc(50% - 6px); box-sizing: border-box;">
+                <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=80&q=80" alt="Story plot events" style="width: 36px; height: 36px; border-radius: 4px; object-fit: cover;">
+                <span style="font-size: 13px; font-weight: 500;">The types of events and conflicts that occur</span>
+            </div>
+            <div class="sort-card" draggable="true" id="scard-2" data-category="aesthetics" style="background-color: #373e47; border: 1px solid #444c56; border-radius: 6px; padding: 10px; cursor: grab; display: flex; align-items: center; gap: 10px; width: calc(50% - 6px); box-sizing: border-box;">
+                <img src="https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=80&q=80" alt="Visual style and lighting" style="width: 36px; height: 36px; border-radius: 4px; object-fit: cover;">
+                <span style="font-size: 13px; font-weight: 500;">Visual style, lighting, costumes, and sound design</span>
+            </div>
+            <div class="sort-card" draggable="true" id="scard-3" data-category="emotion" style="background-color: #373e47; border: 1px solid #444c56; border-radius: 6px; padding: 10px; cursor: grab; display: flex; align-items: center; gap: 10px; width: calc(100% - 0px); box-sizing: border-box;">
+                <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=80&q=80" alt="Emotional audience reaction" style="width: 36px; height: 36px; border-radius: 4px; object-fit: cover;">
+                <span style="font-size: 13px; font-weight: 500;">How the film makes you feel (frightened or amused)</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="sorter-feedback" style="margin-top: 14px; padding: 12px; border-radius: 4px; text-align: center; font-weight: bold; display: none;"></div>
+    <button id="sorter-reset" style="background-color: #1c8a24; color: #ffffff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 14px; display: none;">Reset Sorter</button>
+</div>
+
+<script>
+    const sCards = document.querySelectorAll('.sort-card');
+    const sZones = document.querySelectorAll('.sort-drop-zone');
+    const sScoreEl = document.getElementById('sorter-score');
+    const sStreakEl = document.getElementById('sorter-streak');
+    const sFeedback = document.getElementById('sorter-feedback');
+    const sResetBtn = document.getElementById('sorter-reset');
+    const sBank = document.getElementById('sorter-bank');
+
+    let sScore = 0;
+    let sStreak = 0;
+
+    sCards.forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', card.id);
+        });
+    });
+
+    sZones.forEach(zone => {
+        zone.addEventListener('dragover', (e) => e.preventDefault());
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const cardId = e.dataTransfer.getData('text/plain');
+            const card = document.getElementById(cardId);
+            if (!card) return;
+
+            if (zone.dataset.category === card.dataset.category) {
+                zone.querySelector('.zone-items').appendChild(card);
+                card.setAttribute('draggable', 'false');
+                card.style.cursor = 'default';
+                card.style.width = '100%';
+                sScore++;
+                sStreak++;
+                sScoreEl.textContent = sScore;
+                sStreakEl.textContent = sStreak;
+
+                if (sScore === 3) {
+                    sFeedback.textContent = "🎉 Brilliant! You have successfully mastered the three core pillars of film genre.";
+                    sFeedback.style.backgroundColor = "rgba(28, 138, 36, 0.2)";
+                    sFeedback.style.border = "1px solid #1c8a24";
+                    sFeedback.style.color = "#55ff66";
+                    sFeedback.style.display = 'block';
+                    sResetBtn.style.display = 'inline-block';
+                }
+            } else {
+                sStreak = 0;
+                sStreakEl.textContent = sStreak;
+                sFeedback.textContent = "❌ Incorrect category! Try placing this pillar elsewhere.";
+                sFeedback.style.backgroundColor = "rgba(255, 107, 107, 0.1)";
+                sFeedback.style.border = "1px solid #ff6b6b";
+                sFeedback.style.color = "#ff6b6b";
+                sFeedback.style.display = 'block';
+                setTimeout(() => { sFeedback.style.display = 'none'; }, 2000);
+            }
+        });
+    });
+
+    sResetBtn.addEventListener('click', () => {
+        sScore = 0;
+        sStreak = 0;
+        sScoreEl.textContent = sScore;
+        sStreakEl.textContent = sStreak;
+        sFeedback.style.display = 'none';
+        sResetBtn.style.display = 'none';
+        sCards.forEach(card => {
+            card.setAttribute('draggable', 'true');
+            card.style.cursor = 'grab';
+            card.style.width = card.dataset.category === 'emotion' ? '100%' : 'calc(50% - 6px)';
+            sBank.appendChild(card);
+        });
+    });
+</script>
